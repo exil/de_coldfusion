@@ -57,6 +57,28 @@ class TestCommand(sublime_plugin.TextCommand):
 
 		return result
 
+
+	# def parseErrors(self, result):
+	# 	try:
+	# 		xmlDoc = minidom.parseString(result)
+
+	# 		self.errorArray = []
+	# 		self.regions = []
+	# 		lineNumbers = xmlDoc.getElementsByTagName("line_number")
+
+	# 		if lineNumbers:
+	# 			for node in lineNumbers:
+	# 				ln = node.firstChild.nodeValue
+					
+	# 				self.errorArray.append(ln)
+	# 				self.regions.append(self.getRegion(ln))
+
+	# 			self.view.add_regions(constants.VARSCOPER_REGION, self.regions, "string")
+	# 			self.loadPanel(self.errorArray)
+
+	# 	except Exception as e:
+	# 		util.error("Error parsing results : " + str(e))
+	
 	def parseErrors(self, result):
 		try:
 			xmlDoc = minidom.parseString(result)

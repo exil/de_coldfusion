@@ -1,24 +1,20 @@
 import constants
 import sublime
 import sublime_plugin
-import urllib  
-import urllib2
-import re
-import util
-from threading import Thread
+import urllib
+import de_util
 from xml.dom import minidom
 from de_base import LinterBase
 
-class VarScoper(LinterBase):	
-	def __init__(self, view):
-   		super(LinterBase, VarScoper).__init__(view)
-		self.view = view
+class de_varscoperCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		view = sublime.active_window().active_view()
+		self.baseLinter = LinterBase(view)
 
-	def run(self):
-		if not (".cfc" in self.view.file_name()):
+		if not (".cfc" in view.file_name()):
 			return
 
-		absolutePath = util.buildServerPath(self.view.file_name())
+		absolutePath = util.buildServerPath(view.file_name())
 
 		if absolutePath is None or absolutePath == "":
 			util.error("Could not locate file in ~/var/websites/")
@@ -36,51 +32,46 @@ class VarScoper(LinterBase):
 		    		,"Content-Length": len(data)
 				}
 
-				result = self.httpGet(data=data, headers=headers)
-				self.parseErrors(result)
+				xmlResult = util.httpGet(data=data, headers=headers)
 			except Exception as e:
 				util.error("Error getting http response : " + str(e))
 
-	def httpGet(self, data, headers):
-		result = ""
+			try:
+				result = self.parseXmlDoc(xmlResult)
+
+				if result["errors"]:
+					self.baseLinter.parseErrors(result)
+			except Exception as e:
+				util.error(str(e))
+
+	def parseXmlDoc(self, xmlResult):
+		result = {}
+		result["errors"] = []
+		result["regions"] = []
 
 		try:
-			proxy_support = urllib2.ProxyHandler({})
-			opener = urllib2.build_opener(proxy_support)
-			urllib2.install_opener(opener)
-			http_handler = urllib2.HTTPHandler()
-			opener = urllib2.build_opener(http_handler)
-			
-			request = urllib2.Request(url=util.buidlUrl(constants.LOCALHOST_VARSCOPER_URL, data)
-				,headers=headers)
-			response = urllib2.urlopen(request, "3")
+			xmlDoc = minidom.parseString(xmlResult)
 
-			result = response.read()
-		except urllib2.HTTPError as e:
-			util.error("HTTPError: " + str(e.code))
-		except urllib2.URLError as e:
-			util.error("URLError: " + str(e.reason))
+			functionNodes =xmlDoc.getElementsByTagName("function")
 
-		return result
+			for fNode in functionNodes:
+				fName = fNode.getAttribute("name")
+				fDetail = fNode.firstChild
 
-	def parseErrors(self, result):
-		try:
-			xmlDoc = minidom.parseString(result)
+				fVariable = fDetail.getElementsByTagName("type")[0].firstChild.nodeValue
+				fLineNumber = fDetail.getElementsByTagName("line_number")[0].firstChild.nodeValue
+				
+				errorText = "Function [ %s ] :: Variable [ %s ] " % (fName, fVariable)
+				errorCaption = "VarScoper :: %s " % (fLineNumber)
 
-			self.errorArray = []
-			self.regions = []
-			lineNumbers = xmlDoc.getElementsByTagName("line_number")
-
-			if lineNumbers:
-				for node in lineNumbers:
-					ln = node.firstChild.nodeValue
-					
-					self.errorArray.append(ln)
-					self.regions.append(self.getRegion(ln))
-
-				self.view.add_regions(constants.VARSCOPER_REGION, self.regions, "string")
-				self.loadPanel(self.errorArray)
+				result["errors"].append(util.returnErrorArray(errorCaption, errorText))
+				result["regions"].append(self.baseLinter.getRegion(fLineNumber))
 
 		except Exception as e:
-			util.error("Error parsing results : " + str(e))
+			util.log("Error parsing xml results :: " + str(e))
+
+		return result
 	
+
+
+

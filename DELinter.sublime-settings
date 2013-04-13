@@ -1,0 +1,12 @@
+{
+	/*
+		de_linters : devarscoper, destandard
+		comment out to disable linter.	
+	*/
+
+
+	"de_linter" : [
+		"de_varscoper"
+		// ,"destandard"
+	]
+}

@@ -3,6 +3,8 @@ import sublime_plugin
 import constants
 from line import LineUtil
 
+# Deprecated needs to be refactor
+
 class DEStandards:
 	def __init__(self, view):
 		self.view = view
