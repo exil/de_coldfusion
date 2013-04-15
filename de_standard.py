@@ -13,37 +13,39 @@ class DeStandard():
 		options = de_util.getSettings("de_standard_options")
 
 		for option, value in options.iteritems():
-			optionResult = self.getOptionResult(option, value)
+			optionResult = self.__getOptionResult(option, value)
 
 			if optionResult is not None:
 				errorResult = de_util.mergeResults(errorResult, optionResult)
 
 		return errorResult
 
-	def checkClosingTags(self):
-		return self.getErrors("(\s{2,}|([^\s]))/>", constants.STANDARD_CLOSING_TAG_MSG)
+### Private methods
 
-	def checkDump(self):
-		return self.getErrors("<cfdump[^>]*>", constants.STANDARD_DUMP_MSG)
+	def __checkClosingTags(self):
+		return self.__getErrors("(\s{2,}|([^\s]))/>", constants.STANDARD_CLOSING_TAG_MSG)
 
-	def checkAbort(self):
-		return self.getErrors("<cfabort[^>]*?>", constants.STANDARD_ABORT_MSG)
+	def __checkDump(self):
+		return self.__getErrors("<cfdump[^>]*>", constants.STANDARD_DUMP_MSG)
 
-	def checkTab(self):
-		return self.getErrors("(\x09)+",constants.STANDARD_TAB_MSG)
+	def __checkAbort(self):
+		return self.__getErrors("<cfabort[^>]*?>", constants.STANDARD_ABORT_MSG)
 
-	def checkIndentation(self):
+	def __checkTab(self):
+		return self.__getErrors("(\x09)+",constants.STANDARD_TAB_MSG)
+
+	def __checkIndentation(self):
 		pass
 
-	def checkCFSetValidation(self):
+	def __checkCFSetValidation(self):
 		pass
 
-	def getOptionResult(self, option, value):
+	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
-			constants.DE_STANDARD_CLOSING_TAB : self.checkClosingTags
-			,constants.DE_STANDARD_DUMP : self.checkDump
-			,constants.DE_STANDARD_ABORT : self.checkAbort
-			,constants.DE_STANDARD_TAB : self.checkTab
+			constants.DE_STANDARD_CLOSING_TAB : self.__checkClosingTags
+			,constants.DE_STANDARD_DUMP : self.__checkDump
+			,constants.DE_STANDARD_ABORT : self.__checkAbort
+			,constants.DE_STANDARD_TAB : self.__checkTab
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
@@ -51,7 +53,7 @@ class DeStandard():
 
 		return None
 
-	def getErrors(self, regex, errorText):
+	def __getErrors(self, regex, errorText):
 		selections = self.view.find_all(regex, sublime.IGNORECASE)
 		errorResult = None
 

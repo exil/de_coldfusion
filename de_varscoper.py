@@ -33,7 +33,7 @@ class DeVarscoper():
 				de_util.log("Error getting http response : " + str(e))
 			else:
 				try:
-					result = self.parseXmlResult(xmlResult)
+					result = self.__parseXmlResult(xmlResult)
 
 					if result["errors"]:
 						errorResult = result
@@ -43,7 +43,9 @@ class DeVarscoper():
 
 		return errorResult
 
-	def parseXmlResult(self, xmlResult):
+### Private methods
+
+	def __parseXmlResult(self, xmlResult):
 		result = de_util.getResultObject()
 
 		try:

@@ -15,23 +15,25 @@ class DeLinter(sublime_plugin.EventListener):
 		linters = de_util.getSettings("de_linter")
 
 		if (".cfc" in self.view.file_name()) and linters:
-			result = self.getErrorResults(linters)
+			result = self.__getErrorResults(linters)
 
 			linterBase = LinterBase(self.view)
 			linterBase.parseErrors(result)
 
-	def getErrorResults(self, linters):
+### Private methods
+
+	def __getErrorResults(self, linters):
 		result = de_util.getResultObject()
 
 		for linter, value in linters.iteritems():
-			errorResult = self.getLinterResult(linter, value)
+			errorResult = self.__getLinterResult(linter, value)
 
 			if errorResult is not None:
 				result = de_util.mergeResults(result, errorResult)
 
 		return result
 
-	def getLinterResult(self, linter, value):
+	def __getLinterResult(self, linter, value):
 		OPTION_KEYS = {
 			constants.DE_VARSCOPER : DeVarscoper().getResult
 			,constants.DE_STANDARD : DeStandard().getResult
