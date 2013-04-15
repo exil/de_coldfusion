@@ -1,6 +1,7 @@
 import constants
 import de_util
 import re
+import sublime
 
 class LinterBase(object):
 	def __init__(self, view):
@@ -9,7 +10,7 @@ class LinterBase(object):
 
 	def loadPanel(self, errorArray):
 		self.errors = errorArray
-		self.view.window().show_quick_panel(errorArray, self.gotoLine)
+		self.view.window().show_quick_panel(self.errors, self.gotoLine)
 
 	def getRegion(self, ln):
 		point = self.getPoint(ln)
@@ -19,7 +20,6 @@ class LinterBase(object):
 		return self.view.text_point(int(ln)-1, 0)
 
 	def gotoLine(self, index):
-		pass
 		if index != -1:
 			error = self.errors[index][0]
 			ln = re.search("[0-9]+", error).group()
@@ -27,8 +27,17 @@ class LinterBase(object):
 
 	def parseErrors(self, result):
 		try:
-			self.view.add_regions(constants.VARSCOPER_REGION, result["regions"], "string")
-			self.loadPanel(result["errors"])
+			if result:
+				self.view.add_regions(constants.DE_LINTER_REGION, result["regions"], "string")
+
+				if de_util.getSettings("show_drop_down"):
+					self.loadPanel(result["errors"])
 
 		except Exception as e:
-			util.log("Error parsing results : " + str(e))
+			de_util.log("Error parsing results : " + str(e))
+
+	def getLineNumber(self, region):
+		line = self.view.full_line(region)
+		lineNumber = self.view.rowcol(line.begin())[0] + 1
+
+		return lineNumber

@@ -8,7 +8,7 @@ from xml.dom import minidom
 
 class TestCommand(sublime_plugin.TextCommand):
 	LOCALHOST_VARSCOPER_URL = "http://localhost/varscoper/index.cfm"
-	VARSCOPER_REGION = "varscoper_region"
+	DE_LINTER_REGION = "DE_LINTER_REGION"
 
 	def run(self, edit):
 		absolutePath = self.buildServerPath(self.view.file_name())
@@ -73,7 +73,7 @@ class TestCommand(sublime_plugin.TextCommand):
 	# 				self.errorArray.append(ln)
 	# 				self.regions.append(self.getRegion(ln))
 
-	# 			self.view.add_regions(constants.VARSCOPER_REGION, self.regions, "string")
+	# 			self.view.add_regions(constants.DE_LINTER_REGION, self.regions, "string")
 	# 			self.loadPanel(self.errorArray)
 
 	# 	except Exception as e:
@@ -92,7 +92,7 @@ class TestCommand(sublime_plugin.TextCommand):
 				self.errorArray.append(ln)
 				self.regions.append(self.getRegion(ln))
 
-			self.view.add_regions(self.VARSCOPER_REGION, self.regions, "string")
+			self.view.add_regions(self.DE_LINTER_REGION, self.regions, "string")
 			self.loadPanel(self.view.window(), self.errorArray)
 		except:
 			print "Error parsing results"

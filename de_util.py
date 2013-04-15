@@ -3,9 +3,23 @@ import constants
 import re
 import sublime
 
+def getResultObject():
+	result = {}
+	result["errors"] = []
+	result["regions"] = []
+
+	return result
+
+def mergeResults(result1, result2):
+	result1["errors"].extend(result2["errors"])
+	result1["regions"].extend(result2["regions"])
+
+	return result1
+
 def returnErrorArray(caption, text):
 	errorCaption = padSpace(caption, 4)
 	errorText = padSpace(text, 12) 
+
 	return [errorCaption, errorText]
 
 def padSpace(value, spaces):
@@ -29,13 +43,13 @@ def buidlUrl(url, queryString):
 	return url + "?" + queryString
 
 def alert(message):
-	sublime.message_dialog(message)
+	sublime.message_dialog(constants.DE_LINTER + " :: " + message)
 
 def log(message):
-	print message
+	print (constants.DE_LINTER + " :: " + message)
 
 def error(message):
-	sublime.error_message(message)
+	sublime.error_message(constants.DE_LINTER + " :: " + message)
 
 def httpGet(data, headers):
 	result = ""
@@ -50,7 +64,8 @@ def httpGet(data, headers):
 		
 		request = urllib2.Request(url=buidlUrl(constants.LOCALHOST_VARSCOPER_URL, data)
 			,headers=headers)
-		response = urllib2.urlopen(request, "3")
+
+		response = urllib2.urlopen(request, "1")
 
 		result = response.read()
 	except urllib2.HTTPError as e:
@@ -59,3 +74,8 @@ def httpGet(data, headers):
 		log("URLError: " + str(e.reason))
 
 	return result
+
+def getSettings(setting):
+	settings = sublime.load_settings(constants.DE_LINTER_SETTINGS).get(setting)
+
+	return settings

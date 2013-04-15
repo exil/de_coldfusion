@@ -1,12 +1,20 @@
 {
 	/*
-		de_linters : devarscoper, destandard
+		de_linters : de_varscoper, de_standard
 		comment out to disable linter.	
 	*/
 
+	"de_linter" : {
+		"de_varscoper" : true
+		,"de_standard" : true
+	}
+	
+	,"de_standard_options" : {
+		"closing_tag" : true
+		,"dump" : true
+		,"abort" : true
+		,"tab" : true
+	}
 
-	"de_linter" : [
-		"de_varscoper"
-		// ,"destandard"
-	]
+	,"show_drop_down" : true
 }

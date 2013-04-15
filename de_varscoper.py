@@ -1,23 +1,19 @@
 import constants
-import sublime
-import sublime_plugin
 import urllib
 import de_util
 from xml.dom import minidom
 from de_base import LinterBase
 
-class de_varscoperCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		view = sublime.active_window().active_view()
+class DeVarscoper():
+	def getResult(self, view):
 		self.baseLinter = LinterBase(view)
 
-		if not (".cfc" in view.file_name()):
-			return
+		errorResult = None
+		absolutePath = de_util.buildServerPath(view.file_name())
 
-		absolutePath = util.buildServerPath(view.file_name())
+		if (absolutePath is None) or (absolutePath == ""):
+			de_util.log("Could not locate file in ~/var/websites/")
 
-		if absolutePath is None or absolutePath == "":
-			util.error("Could not locate file in ~/var/websites/")
 		else:
 			try:
 				data = urllib.urlencode({
@@ -32,22 +28,23 @@ class de_varscoperCommand(sublime_plugin.TextCommand):
 		    		,"Content-Length": len(data)
 				}
 
-				xmlResult = util.httpGet(data=data, headers=headers)
+				xmlResult = de_util.httpGet(data=data, headers=headers)
 			except Exception as e:
-				util.error("Error getting http response : " + str(e))
+				de_util.log("Error getting http response : " + str(e))
+			else:
+				try:
+					result = self.parseXmlResult(xmlResult)
 
-			try:
-				result = self.parseXmlDoc(xmlResult)
+					if result["errors"]:
+						errorResult = result
+				
+				except Exception as e:
+					de_util.log(str(e))
 
-				if result["errors"]:
-					self.baseLinter.parseErrors(result)
-			except Exception as e:
-				util.error(str(e))
+		return errorResult
 
-	def parseXmlDoc(self, xmlResult):
-		result = {}
-		result["errors"] = []
-		result["regions"] = []
+	def parseXmlResult(self, xmlResult):
+		result = de_util.getResultObject()
 
 		try:
 			xmlDoc = minidom.parseString(xmlResult)
@@ -62,13 +59,13 @@ class de_varscoperCommand(sublime_plugin.TextCommand):
 				fLineNumber = fDetail.getElementsByTagName("line_number")[0].firstChild.nodeValue
 				
 				errorText = "Function [ %s ] :: Variable [ %s ] " % (fName, fVariable)
-				errorCaption = "VarScoper :: %s " % (fLineNumber)
+				errorCaption = "Varscoper :: %s " % (fLineNumber)
 
-				result["errors"].append(util.returnErrorArray(errorCaption, errorText))
+				result["errors"].append(de_util.returnErrorArray(errorCaption, errorText))
 				result["regions"].append(self.baseLinter.getRegion(fLineNumber))
 
 		except Exception as e:
-			util.log("Error parsing xml results :: " + str(e))
+			de_util.log("Error parsing xml results :: " + str(e))
 
 		return result
 	
