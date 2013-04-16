@@ -14,6 +14,10 @@
 		,"dump" : true
 		,"abort" : true
 		,"tab" : true
+		,"close_expression_tag" : true
+		,"cfset_validation" : true
+		,"indentation" : true
+		,"return" : true
 	}
 
 	,"show_drop_down" : true

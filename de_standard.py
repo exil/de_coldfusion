@@ -22,30 +22,64 @@ class DeStandard():
 
 ### Private methods
 
-	def __checkClosingTags(self):
-		return self.__getErrors("(\s{2,}|([^\s]))/>", constants.STANDARD_CLOSING_TAG_MSG)
-
 	def __checkDump(self):
-		return self.__getErrors("<cfdump[^>]*>", constants.STANDARD_DUMP_MSG)
+		return self.__getErrors(regex="<cfdump[^>]*>", errorText=constants.STANDARD_DUMP_MSG)
 
 	def __checkAbort(self):
-		return self.__getErrors("<cfabort[^>]*?>", constants.STANDARD_ABORT_MSG)
+		return self.__getErrors(regex="<cfabort[^>]*?>", errorText=constants.STANDARD_ABORT_MSG)
 
 	def __checkTab(self):
-		return self.__getErrors("(\x09)+",constants.STANDARD_TAB_MSG)
+		return self.__getErrors(regex="(\x09)+", errorText=constants.STANDARD_TAB_MSG)
 
 	def __checkIndentation(self):
-		pass
+		selections = self.view.find_all("[\s].+<cf", sublime.IGNORECASE)
+		errorRegions = []
+
+		if selections:
+
+			for selection in selections:
+				if not ((selection.size() % 4) == 0):
+					errorRegions.append(selection)
+
+		return self.__getErrors(selections=errorRegions, errorText=constants.STANDARD_INDENTATION_MSG)
 
 	def __checkCFSetValidation(self):
+		return self.__getErrors(regex="<cfset([\s]*#)|([^=\r\n]*=[\s]*#)", errorText=constants.STANDARD_CFSET_VALIDATION_MSG)
+
+	def __checkCloseExpressionTag(self):
+		expressionTags = constants.CF_EXPRESSION_TAGS.split(",")
+		result = None
+
+		if expressionTags:
+			result = de_util.getResultObject()
+
+			for tag in expressionTags:
+				tagResult = self.__getErrors(regex="<" + tag + "(>|[^/]+>)|((\s{2,}|([^\s]))/>)", errorText=constants.STANDARD_CLOSING_TAG_MSG)
+				if tagResult is not None:
+					result = de_util.mergeResults(result, tagResult)
+
+		return result
+
+	def __checkReturnFormat(self):
+		pass
+
+	def __checkDeclarationBreak(self):
+		#Check line break between args, variable declaration and implementation
+		pass 
+
+	def _checkEndFunctionFormat(self):
+		#check cfretun or line break
 		pass
 
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
-			constants.DE_STANDARD_CLOSING_TAB : self.__checkClosingTags
-			,constants.DE_STANDARD_DUMP : self.__checkDump
+			 constants.DE_STANDARD_DUMP : self.__checkDump
 			,constants.DE_STANDARD_ABORT : self.__checkAbort
 			,constants.DE_STANDARD_TAB : self.__checkTab
+			,constants.DE_STANDARD_RETURN : self.__checkReturnFormat
+			,constants.DE_STANDARD_INDENTATION : self.__checkIndentation
+			,constants.DE_STANDARD_CLOSE_EXPRESSION_TAG : self.__checkCloseExpressionTag
+			,constants.DE_STANDARD_CFSET_VALIDATION : self.__checkCFSetValidation
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
@@ -53,8 +87,10 @@ class DeStandard():
 
 		return None
 
-	def __getErrors(self, regex, errorText):
-		selections = self.view.find_all(regex, sublime.IGNORECASE)
+	def __getErrors(self, regex=None, errorText=None, selections=None):
+		if selections is None:
+			selections = self.view.find_all(regex, sublime.IGNORECASE)
+
 		errorResult = None
 
 		if selections:
