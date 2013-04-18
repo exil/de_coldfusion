@@ -125,7 +125,7 @@ class DeStandard():
 
 		if cfifRegions:
 			operatorRegex = re.compile("(\!|\!\=|\=\=|\<|\>)")
-			caseRegex = re.compile("AND|OR|NOT|EQ|NEQ|GT|LT|GTE|LTE", re.IGNORECASE)
+			caseRegex = re.compile(" (AND|OR|NOT|EQ|NEQ|GT|LT|GTE|LTE) ", re.IGNORECASE)
 
 			for region in cfifRegions:
 				validCase = True
