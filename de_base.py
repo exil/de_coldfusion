@@ -34,11 +34,7 @@ class LinterBase(object):
 	def parseErrors(self, result):
 		try:
 			if result:
-<<<<<<< HEAD
 				self.view.add_regions(constants.DE_LINTER_REGION, result["regions"], "string", sublime.DRAW_OUTLINED)
-=======
-				self.view.add_regions(constants.DE_LINTER_REGION, result["regions"], "string", "", sublime.DRAW_OUTLINED)
->>>>>>> Update highlight
 
 				if de_util.getSettings("show_drop_down"):
 					result["errors"].sort(key=lambda tup: tup[0]) 
