@@ -30,6 +30,7 @@ STANDARD_INDENTATION_MSG = "Incorrect indentation format."
 STANDARD_CFSET_VALIDATION_MSG = "Hash might not be needed."
 STANDARD_ARGUMENT_LINEBREAK_MSG = "Needs linebreak between arguments and implementation"
 STANDARD_EXECESS_LINEBREAK_MSG = "Line has more than one linebreak"
+STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION = "Needs blank line before closing cffunction tag"
 
 # Coldfusion expression tags
 CF_EXPRESSION_TAGS = "cfargument,cfbreak,cfexit,cfinvoke,cfparam,cfqueryparam,cfreturn,cfset,cfthrow"

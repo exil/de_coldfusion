@@ -85,11 +85,22 @@ class DeStandard():
 		pass
 
 	def __checkCFReturnNewline(self):
-		#return self.__getErrors("<cfreturn[^>]*> *\n{2,} *</cffunction>", constants.STANDARD_CFRETURN_MSG)
 		return self.__getErrors("<cfreturn[^>]*>\s*\n\s*\n\s*</cffunction>", constants.STANDARD_CFRETURN_MSG)
 
 	def __checkCFFunctionNewLine(self):
-		self.__getFunctionClosing()
+		regions = self.view.find_all("(.+)[\r\n](.+)</cffunction>", sublime.IGNORECASE)
+
+		cfReturnTag = re.compile("(.+)cfreturn")
+
+		badRegions = []
+
+		for region in regions:
+			substring = self.view.substr(region)
+			result = cfReturnTag.match(substring)
+			if not result:
+				badRegions.append(region)
+
+		return self.__getErrors(errorText=constants.STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION, selections=badRegions)
 
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
@@ -128,6 +139,3 @@ class DeStandard():
 				errorResult["errors"].append(de_util.returnErrorArray(errorCaption, errorText))
 
 		return errorResult
-
-	def __getFunctionClosing(self):
-		print self.view.find_all("cfreturn[^>]*>\s*\n\s*\n\s*</cffunction>", sublime.IGNORECASE)
