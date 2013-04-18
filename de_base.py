@@ -37,6 +37,8 @@ class LinterBase(object):
 				self.view.add_regions(constants.DE_LINTER_REGION, result["regions"], "string", sublime.DRAW_OUTLINED)
 
 				if de_util.getSettings("show_drop_down"):
+					result["errors"].sort(key=lambda tup: tup[0]) 
+
 					self.loadPanel(result["errors"])
 
 		except Exception as e:

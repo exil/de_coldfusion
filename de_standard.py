@@ -114,7 +114,8 @@ class DeStandard():
 
 			for selection in selections:
 				lineNumber = self.baseLinter.getLineNumber(selection)
-				errorCaption = "DE Standard :: %s " % (lineNumber)
+				errorCaption = "DE Standard :: %+5s " % (str(lineNumber))
+
 				errorResult["errors"].append(de_util.returnErrorArray(errorCaption, errorText))
 
 		return errorResult
