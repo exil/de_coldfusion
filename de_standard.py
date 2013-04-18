@@ -33,7 +33,7 @@ class DeStandard():
 		return self.__getErrors(regex="(\x09)+", errorText=constants.STANDARD_TAB_MSG)
 
 	def __checkIndentation(self):
-		selections = self.view.find_all("(((.+)(<cf)((?!queryparam).)*$)|(.+)(<!-))", sublime.IGNORECASE)
+		selections = self.view.find_all("(((.+)(<cf)((?!queryparam).)*$)|(.+)(<\!-))", sublime.IGNORECASE)
 		errorRegions = []
 
 		if selections:
@@ -74,11 +74,13 @@ class DeStandard():
 	def __checkReturnFormat(self):
 		pass
 
-	def __checkDeclarationBreak(self):
-		#Check line break between args, variable declaration and implementation
-		pass 
+	def __checkExcessLineBreaks(self):
+		return self.__getErrors(regex="^[\r\n]{2,}", errorText=constants.STANDARD_EXECESS_LINEBREAK_MSG)
 
-	def _checkEndFunctionFormat(self):
+	def __checkDeclarationBreak(self):
+		return self.__getErrors(regex="(<cfargument((?!.*(Service|Utility)).*))[\r\n](.*<cf(?!argument))", errorText=constants.STANDARD_ARGUMENT_LINEBREAK_MSG)
+
+	def __checkEndFunctionFormat(self):
 		#check cfretun or line break
 		pass
 
@@ -91,6 +93,8 @@ class DeStandard():
 			,constants.DE_STANDARD_INDENTATION : self.__checkIndentation
 			,constants.DE_STANDARD_CLOSE_EXPRESSION_TAG : self.__checkCloseExpressionTag
 			,constants.DE_STANDARD_POINT_VALIDATION : self.__checkCFSetValidation
+			,constants.DE_STANDARD_ARGUMENT_LINEBREAK : self.__checkDeclarationBreak
+			,constants.DE_STANDARD_EXCESS_LINEBREAK : self.__checkExcessLineBreaks
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):

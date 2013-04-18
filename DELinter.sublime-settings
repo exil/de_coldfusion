@@ -18,6 +18,8 @@
 		,"pound_validation" : true
 		,"indentation" : true
 		,"return" : true
+		,"argument_linebreak" : true
+		,"excess_linebreak" : true
 	}
 
 	,"show_drop_down" : true
