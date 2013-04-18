@@ -23,6 +23,7 @@
 		,"de_cfqueryparam" : true
 		,"function" : true
 		,"function_line" : true
+		,"timeout" : true
 	}
 
 	,"show_drop_down" : true

@@ -121,6 +121,9 @@ class DeStandard():
 	def __checkBlankLineBetweenFunctions(self):
 		return self.__getErrors("(.+)</cffunction>(.*)[\r\n]{0,1}( *)<cffunction(.*)>", constants.STANDARD_BLANK_LINE_BETWEEN_FUNCTIONS_MSG)
 
+	def __checkTimeoutInHttpQuery(self):
+		return self.__getErrors("(.*)<(cfhttp |cfquery )((?!.*timeout=)(.*))>", constants.STANDARD_TIMEOUT_IN_HTTP_AND_QUERY_MSG)
+
 
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
@@ -137,6 +140,7 @@ class DeStandard():
 			,constants.DE_STANDARD_CFRETURN : self.__checkCFReturnNewline
 			,constants.DE_STANDARD_CFFUNCTION : self.__checkCFFunctionNewLine
 			,constants.DE_STANDARD_LINE_BETWEEN_CFFUNCTION : self.__checkBlankLineBetweenFunctions
+			,constants.DE_STANDARD_TIMEOUT_IN_HTTP_QUERY : self.__checkTimeoutInHttpQuery
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
