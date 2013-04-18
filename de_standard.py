@@ -2,12 +2,12 @@ import constants
 import sublime
 import sublime_plugin
 import de_util
-from de_base import LinterBase
+import de_base 
 
 class DeStandard():
 	def getResult(self, view):
 		self.view = view
-		self.baseLinter = LinterBase(view)
+		self.baseLinter = de_base.LinterBase(view)
 
 		errorResult = de_util.getResultObject()
 		options = de_util.getSettings("de_standard_options")
