@@ -100,6 +100,24 @@ class DeStandard():
 		#check cfretun or line break
 		pass
 
+	def __checkCFReturnNewline(self):
+		return self.__getErrors("<cfreturn[^>]*>\s*\n\s*\n\s*</cffunction>", constants.STANDARD_CFRETURN_MSG)
+
+	def __checkCFFunctionNewLine(self):
+		regions = self.view.find_all("(.+)[\r\n](.+)</cffunction>", sublime.IGNORECASE)
+
+		cfReturnTag = re.compile("(.+)cfreturn")
+
+		badRegions = []
+
+		for region in regions:
+			substring = self.view.substr(region)
+			result = cfReturnTag.match(substring)
+			if not result:
+				badRegions.append(region)
+
+		return self.__getErrors(errorText=constants.STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION, selections=badRegions)
+
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
 			 constants.DE_STANDARD_DUMP : self.__checkDump
@@ -112,6 +130,8 @@ class DeStandard():
 			,constants.DE_STANDARD_ARGUMENT_LINEBREAK : self.__checkDeclarationBreak
 			,constants.DE_STANDARD_EXCESS_LINEBREAK : self.__checkExcessLineBreaks
 			,constants.DE_STANDARD_CFQUERYPARAM : self.__checkCFQueryParam
+			,constants.DE_STANDARD_CFRETURN : self.__checkCFReturnNewline
+			,constants.DE_STANDARD_CFFUNCTION : self.__checkCFFunctionNewLine
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
