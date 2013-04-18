@@ -60,7 +60,7 @@ class DeStandard():
 			result = de_util.getResultObject()
 
 			for tag in expressionTags:
-				tagResult1 = self.__getErrors(regex="<" + tag + ".*[^/]>", errorText=constants.STANDARD_CLOSING_TAG_MSG)
+				tagResult1 = self.__getErrors(regex="<" + tag + ".*[^/-]>", errorText=constants.STANDARD_CLOSING_TAG_MSG)
 				tagResult2 = self.__getErrors(regex="<" + tag + ".*((\s{2,})/>|([^\s])/>)", errorText=constants.STANDARD_CLOSING_TAG_MSG)
 				
 				if tagResult1 is not None:
