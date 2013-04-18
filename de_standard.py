@@ -73,32 +73,26 @@ class DeStandard():
 
 	def __checkCFQueryParam(self):
 		cfqueryRegions = self.view.find_all("<cfquery[\s\S]*?<\/cfquery>", sublime.IGNORECASE)
-		selections = []
+		errorRegions = []
 
-		for lineRegion in cfqueryRegions:
-			line = self.view.split_by_newlines(lineRegion)
+		if cfqueryRegions:
+			for lineRegion in cfqueryRegions:
+				line = self.view.split_by_newlines(lineRegion)
 
-			regex = re.compile("(in|=)(\s*)(\(|[#0-9a-zA-Z]+\.)((?!.*(<cfqueryparam)))", re.IGNORECASE)
-			for region in line:
-				subsetError = regex.search(self.view.substr(region))
+				regex = re.compile("(in|=)(\s*)(\(|[#0-9a-zA-Z]+\.)((?!.*(<cfqueryparam)))", re.IGNORECASE)
+				for region in line:
+					subsetError = regex.search(self.view.substr(region))
 
-				if subsetError:
-					selections.append(region)
+					if subsetError:
+						errorRegions.append(region)
 		
-		return self.__getErrors(selections=selections,errorText=constants.STANDARD_CFQUERYPARAM_MSG)
-
-	def __checkReturnFormat(self):
-		pass
+		return self.__getErrors(selections=errorRegions, errorText=constants.STANDARD_CFQUERYPARAM_MSG)
 
 	def __checkExcessLineBreaks(self):
 		return self.__getErrors(regex="^[\r\n]{2,}", errorText=constants.STANDARD_EXECESS_LINEBREAK_MSG)
 
 	def __checkDeclarationBreak(self):
 		return self.__getErrors(regex="(<cfargument((?!.*(Service|Utility)).*))[\r\n](.*<cf(?!argument))", errorText=constants.STANDARD_ARGUMENT_LINEBREAK_MSG)
-
-	def __checkEndFunctionFormat(self):
-		#check cfretun or line break
-		pass
 
 	def __checkCFReturnNewline(self):
 		return self.__getErrors("<cfreturn[^>]*>\s*[\r\n]\s*[\r\n]\s*</cffunction>", constants.STANDARD_CFRETURN_MSG)
@@ -124,13 +118,38 @@ class DeStandard():
 	def __checkTimeoutInHttpQuery(self):
 		return self.__getErrors("(.*)<(cfhttp |cfquery )((?!.*timeout=)(.*))>", constants.STANDARD_TIMEOUT_IN_HTTP_AND_QUERY_MSG)
 
+	def __checkCFIf(self):
+		cfifRegions = self.view.find_all("((cfif|cfelseif).*)(?=\>)", sublime.IGNORECASE)
+
+		errorRegions = []
+
+		if cfifRegions:
+			operatorRegex = re.compile("(\!|\!\=|\=\=|\<|\>)")
+			caseRegex = re.compile("AND|OR|NOT|EQ|NEQ|GT|LT|GTE|LTE", re.IGNORECASE)
+
+			for region in cfifRegions:
+				validCase = True
+				regionString = self.view.substr(region)
+							
+				operatorResult = operatorRegex.search(regionString)
+				caseResult = caseRegex.findall(regionString)		
+
+				if caseResult:
+					for operator in caseResult:
+						if not operator.isupper():
+							validCase = False
+							break 
+
+				if operatorResult or not validCase:
+					errorRegions.append(region)
+
+		return self.__getErrors(selections=errorRegions, errorText=constants.STANDARD_CFIF_MSG)
 
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
 			 constants.DE_STANDARD_DUMP : self.__checkDump
 			,constants.DE_STANDARD_ABORT : self.__checkAbort
 			,constants.DE_STANDARD_TAB : self.__checkTab
-			,constants.DE_STANDARD_RETURN : self.__checkReturnFormat
 			,constants.DE_STANDARD_INDENTATION : self.__checkIndentation
 			,constants.DE_STANDARD_CLOSE_EXPRESSION_TAG : self.__checkCloseExpressionTag
 			,constants.DE_STANDARD_POINT_VALIDATION : self.__checkCFSetValidation
@@ -141,6 +160,7 @@ class DeStandard():
 			,constants.DE_STANDARD_CFFUNCTION : self.__checkCFFunctionNewLine
 			,constants.DE_STANDARD_LINE_BETWEEN_CFFUNCTION : self.__checkBlankLineBetweenFunctions
 			,constants.DE_STANDARD_TIMEOUT_IN_HTTP_QUERY : self.__checkTimeoutInHttpQuery
+			,constants.DE_STANDARD_CFIF : self.__checkCFIf
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):

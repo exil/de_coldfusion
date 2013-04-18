@@ -24,6 +24,7 @@
 		,"function" : true
 		,"function_line" : true
 		,"timeout" : true
+		,"de_cfif" : true
 	}
 
 	,"show_drop_down" : true
