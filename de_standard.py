@@ -60,8 +60,8 @@ class DeStandard():
 			result = de_util.getResultObject()
 
 			for tag in expressionTags:
-				tagResult1 = self.__getErrors(regex="<" + tag + ".*[^/-]>", errorText=constants.STANDARD_CLOSING_TAG_MSG)
-				tagResult2 = self.__getErrors(regex="<" + tag + ".*((\s{2,})/>|([^\s])/>)", errorText=constants.STANDARD_CLOSING_TAG_MSG)
+				tagResult1 = self.__getErrors(regex="<" + tag + ".*[^\/-]>", errorText=constants.STANDARD_CLOSING_TAG_MSG)
+				tagResult2 = self.__getErrors(regex="<" + tag + ".*((\s{2,})\/>|([^\s])\/>)", errorText=constants.STANDARD_CLOSING_TAG_MSG)
 				
 				if tagResult1 is not None:
 					result = de_util.mergeResults(result, tagResult1)
@@ -70,6 +70,22 @@ class DeStandard():
 					result = de_util.mergeResults(result, tagResult2)
 
 		return result
+
+	def __checkCFQueryParam(self):
+		cfqueryRegions = self.view.find_all("<cfquery[\s\S]*?<\/cfquery>", sublime.IGNORECASE)
+		selections = []
+
+		for lineRegion in cfqueryRegions:
+			line = self.view.split_by_newlines(lineRegion)
+
+			regex = re.compile("(in|=)(\s*)(\(|[#0-9a-zA-Z]+\.)((?!.*(<cfqueryparam)))", re.IGNORECASE)
+			for region in line:
+				subsetError = regex.search(self.view.substr(region))
+
+				if subsetError:
+					selections.append(region)
+		
+		return self.__getErrors(selections=selections,errorText=constants.STANDARD_CFQUERYPARAM_MSG)
 
 	def __checkReturnFormat(self):
 		pass
@@ -95,6 +111,7 @@ class DeStandard():
 			,constants.DE_STANDARD_POINT_VALIDATION : self.__checkCFSetValidation
 			,constants.DE_STANDARD_ARGUMENT_LINEBREAK : self.__checkDeclarationBreak
 			,constants.DE_STANDARD_EXCESS_LINEBREAK : self.__checkExcessLineBreaks
+			,constants.DE_STANDARD_CFQUERYPARAM : self.__checkCFQueryParam
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
@@ -112,8 +129,8 @@ class DeStandard():
 			errorResult = de_util.getResultObject()
 			errorResult["regions"] = selections
 
-			for selection in selections:
-				lineNumber = self.baseLinter.getLineNumber(selection)
+			for region in selections:
+				lineNumber = self.baseLinter.getLineNumber(region)
 				errorCaption = "DE Standard :: %+5s " % (str(lineNumber))
 
 				errorResult["errors"].append(de_util.returnErrorArray(errorCaption, errorText))

@@ -20,6 +20,7 @@
 		,"return" : true
 		,"argument_linebreak" : true
 		,"excess_linebreak" : true
+		,"de_cfqueryparam" : true
 	}
 
 	,"show_drop_down" : true
