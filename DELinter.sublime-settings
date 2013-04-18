@@ -22,6 +22,7 @@
 		,"excess_linebreak" : true
 		,"de_cfqueryparam" : true
 		,"function" : true
+		,"function_line" : true
 	}
 
 	,"show_drop_down" : true

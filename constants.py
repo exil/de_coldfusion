@@ -19,6 +19,7 @@ DE_STANDARD_EXCESS_LINEBREAK = "excess_linebreak"
 DE_STANDARD_CFQUERYPARAM = "de_cfqueryparam"
 DE_STANDARD_CFRETURN = "return"
 DE_STANDARD_CFFUNCTION = "function"
+DE_STANDARD_LINE_BETWEEN_CFFUNCTION = "function_line"
 
 
 # Messages
@@ -32,7 +33,8 @@ STANDARD_CFSET_VALIDATION_MSG = "Hash might not be needed."
 STANDARD_ARGUMENT_LINEBREAK_MSG = "Needs linebreak between arguments and implementation"
 STANDARD_EXECESS_LINEBREAK_MSG = "Line has more than one linebreak"
 STANDARD_CFQUERYPARAM_MSG = "Need to enclose variable with a cfqueryparam"
-STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION = "Needs blank line before closing cffunction tag"
+STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION_MSG = "Needs blank line before closing cffunction tag"
+STANDARD_BLANK_LINE_BETWEEN_FUNCTIONS_MSG = "Needs linebreak between functions"
 
 # Coldfusion expression tags
 CF_EXPRESSION_TAGS = "cfargument,cfbreak,cfexit,cfinvoke,cfparam,cfqueryparam,cfreturn,cfset,cfthrow"

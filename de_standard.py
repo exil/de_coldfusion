@@ -101,7 +101,7 @@ class DeStandard():
 		pass
 
 	def __checkCFReturnNewline(self):
-		return self.__getErrors("<cfreturn[^>]*>\s*\n\s*\n\s*</cffunction>", constants.STANDARD_CFRETURN_MSG)
+		return self.__getErrors("<cfreturn[^>]*>\s*[\r\n]\s*[\r\n]\s*</cffunction>", constants.STANDARD_CFRETURN_MSG)
 
 	def __checkCFFunctionNewLine(self):
 		regions = self.view.find_all("(.+)[\r\n](.+)</cffunction>", sublime.IGNORECASE)
@@ -116,7 +116,11 @@ class DeStandard():
 			if not result:
 				badRegions.append(region)
 
-		return self.__getErrors(errorText=constants.STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION, selections=badRegions)
+		return self.__getErrors(errorText=constants.STANDARD_NO_BLANK_LINE_BEFORE_CFFUNCTION_MSG, selections=badRegions)
+
+	def __checkBlankLineBetweenFunctions(self):
+		return self.__getErrors("(.+)</cffunction>(.*)[\r\n]{0,1}( *)<cffunction(.*)>", constants.STANDARD_BLANK_LINE_BETWEEN_FUNCTIONS_MSG)
+
 
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
@@ -132,6 +136,7 @@ class DeStandard():
 			,constants.DE_STANDARD_CFQUERYPARAM : self.__checkCFQueryParam
 			,constants.DE_STANDARD_CFRETURN : self.__checkCFReturnNewline
 			,constants.DE_STANDARD_CFFUNCTION : self.__checkCFFunctionNewLine
+			,constants.DE_STANDARD_LINE_BETWEEN_CFFUNCTION : self.__checkBlankLineBetweenFunctions
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
