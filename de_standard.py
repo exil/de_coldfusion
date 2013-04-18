@@ -84,17 +84,29 @@ class DeStandard():
 		#check cfretun or line break
 		pass
 
+	def __checkCFReturnNewline(self):
+		#return self.__getErrors("<cfreturn[^>]*> *\n{2,} *</cffunction>", constants.STANDARD_CFRETURN_MSG)
+		return self.__getErrors("<cfreturn[^>]*>\s*\n\s*\n\s*</cffunction>", constants.STANDARD_CFRETURN_MSG)
+
+	def __checkCFFunctionNewLine(self):
+		self.__getFunctionClosing()
+
 	def __getOptionResult(self, option, value):
 		OPTION_KEYS = {
 			 constants.DE_STANDARD_DUMP : self.__checkDump
 			,constants.DE_STANDARD_ABORT : self.__checkAbort
 			,constants.DE_STANDARD_TAB : self.__checkTab
+<<<<<<< HEAD
 			,constants.DE_STANDARD_RETURN : self.__checkReturnFormat
 			,constants.DE_STANDARD_INDENTATION : self.__checkIndentation
 			,constants.DE_STANDARD_CLOSE_EXPRESSION_TAG : self.__checkCloseExpressionTag
 			,constants.DE_STANDARD_POINT_VALIDATION : self.__checkCFSetValidation
 			,constants.DE_STANDARD_ARGUMENT_LINEBREAK : self.__checkDeclarationBreak
 			,constants.DE_STANDARD_EXCESS_LINEBREAK : self.__checkExcessLineBreaks
+=======
+			,constants.DE_STANDARD_CFRETURN : self.__checkCFReturnNewline
+			,constants.DE_STANDARD_CFFUNCTION : self.__checkCFFunctionNewLine
+>>>>>>> Update highlight
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):
@@ -119,3 +131,6 @@ class DeStandard():
 				errorResult["errors"].append(de_util.returnErrorArray(errorCaption, errorText))
 
 		return errorResult
+
+	def __getFunctionClosing(self):
+		print self.view.find_all("cfreturn[^>]*>\s*\n\s*\n\s*</cffunction>", sublime.IGNORECASE)

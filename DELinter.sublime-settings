@@ -20,6 +20,7 @@
 		,"return" : true
 		,"argument_linebreak" : true
 		,"excess_linebreak" : true
+		,"function" : true
 	}
 
 	,"show_drop_down" : true
