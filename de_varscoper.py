@@ -2,11 +2,11 @@ import constants
 import urllib
 import de_util
 from xml.dom import minidom
-from de_base import LinterBase
+import de_base
 
 class DeVarscoper():
 	def getResult(self, view):
-		self.baseLinter = LinterBase(view)
+		self.baseLinter = de_base.LinterBase(view)
 
 		errorResult = None
 		absolutePath = de_util.buildServerPath(view.file_name())
