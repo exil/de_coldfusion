@@ -3,6 +3,7 @@ import sublime
 import sublime_plugin
 import de_util
 import de_base 
+import re
 
 class DeStandard():
 	def getResult(self, view):
@@ -32,14 +33,19 @@ class DeStandard():
 		return self.__getErrors(regex="(\x09)+", errorText=constants.STANDARD_TAB_MSG)
 
 	def __checkIndentation(self):
-		selections = self.view.find_all("[\s].+<cf", sublime.IGNORECASE)
+		selections = self.view.find_all("(((.+)(<cf)((?!queryparam).)*$)|(.+)(<!-))", sublime.IGNORECASE)
 		errorRegions = []
 
 		if selections:
 
 			for selection in selections:
-				if not ((selection.size() % 4) == 0):
-					errorRegions.append(selection)
+				indentation = re.search("[\s]+", self.view.substr(selection))
+
+				if indentation:
+					indentation = len(indentation.group())
+
+					if not ((indentation % 4) == 0):
+						errorRegions.append(selection)
 
 		return self.__getErrors(selections=errorRegions, errorText=constants.STANDARD_INDENTATION_MSG)
 
@@ -54,9 +60,14 @@ class DeStandard():
 			result = de_util.getResultObject()
 
 			for tag in expressionTags:
-				tagResult = self.__getErrors(regex="<" + tag + "(>|[^/]+>)|((\s{2,}|([^\s]))/>)", errorText=constants.STANDARD_CLOSING_TAG_MSG)
-				if tagResult is not None:
-					result = de_util.mergeResults(result, tagResult)
+				tagResult1 = self.__getErrors(regex="<" + tag + ".*[^/]>", errorText=constants.STANDARD_CLOSING_TAG_MSG)
+				tagResult2 = self.__getErrors(regex="<" + tag + ".*((\s{2,})/>|([^\s])/>)", errorText=constants.STANDARD_CLOSING_TAG_MSG)
+				
+				if tagResult1 is not None:
+					result = de_util.mergeResults(result, tagResult1)
+
+				if tagResult2 is not None:
+					result = de_util.mergeResults(result, tagResult2)
 
 		return result
 
@@ -79,7 +90,7 @@ class DeStandard():
 			,constants.DE_STANDARD_RETURN : self.__checkReturnFormat
 			,constants.DE_STANDARD_INDENTATION : self.__checkIndentation
 			,constants.DE_STANDARD_CLOSE_EXPRESSION_TAG : self.__checkCloseExpressionTag
-			,constants.DE_STANDARD_CFSET_VALIDATION : self.__checkCFSetValidation
+			,constants.DE_STANDARD_POINT_VALIDATION : self.__checkCFSetValidation
 		}
 
 		if (option in OPTION_KEYS.iterkeys()) and (value):

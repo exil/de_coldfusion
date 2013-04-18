@@ -34,7 +34,7 @@ class LinterBase(object):
 	def parseErrors(self, result):
 		try:
 			if result:
-				self.view.add_regions(constants.DE_LINTER_REGION, result["regions"], "string")
+				self.view.add_regions(constants.DE_LINTER_REGION, result["regions"], "string", sublime.DRAW_OUTLINED)
 
 				if de_util.getSettings("show_drop_down"):
 					self.loadPanel(result["errors"])

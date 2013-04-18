@@ -13,7 +13,7 @@ DE_STANDARD_TAB = "tab"
 DE_STANDARD_RETURN = "return"
 DE_STANDARD_INDENTATION = "tab"
 DE_STANDARD_CLOSE_EXPRESSION_TAG= "close_expression_tag"
-DE_STANDARD_CFSET_VALIDATION = "cfset_validation"
+DE_STANDARD_POINT_VALIDATION = "pound_validation"
 
 # Messages
 STANDARD_CLOSING_TAG_MSG = "Tag needs to be closed correctly."

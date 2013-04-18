@@ -15,7 +15,7 @@
 		,"abort" : true
 		,"tab" : true
 		,"close_expression_tag" : true
-		,"cfset_validation" : true
+		,"pound_validation" : true
 		,"indentation" : true
 		,"return" : true
 	}
